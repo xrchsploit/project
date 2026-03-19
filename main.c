@@ -93,7 +93,7 @@ void displayCacheInput(int cacheSize, int blockSize, int associativity, char* re
     printf("Associativity:                  %d\n", associativity);
     printf("Replacement Policy:             Round Robin\n");
     printf("Physical Memory:                %d MB\n", physicalMemory);
-    printf("Percent Memory Used by System:  %.2f %%\n", percentUsed);
+    printf("Percent Memory Used by System:  %.1f %%\n", percentUsed);
     printf("Instructions / Time slice:      %d\n", instructions);
 
 }
@@ -101,4 +101,8 @@ void displayCacheInput(int cacheSize, int blockSize, int associativity, char* re
 void cacheCalculations(){
 
 
+}
+
+void printCacheCalculations(){
+    
 }
