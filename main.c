@@ -98,8 +98,30 @@ void displayCacheInput(int cacheSize, int blockSize, int associativity, char* re
 
 }
 
-void cacheCalculations(){
+void cacheCalculations(void){
 
+    unsigned int cacheSizeBytes;
+
+    cacheSizeBytes = cacheSize * 1024;
+
+    totalBlocks = cacheSizeBytes / blockSize;
+    totalRows   = totalBlocks / associativity;
+
+    offsetBits = log2_int(blockSize);
+    indexBits  = log2_int(totalRows);
+
+    physicalAddressBits = log2_int(physicalMemory * 1024 * 1024);
+
+    tagBits = physicalAddressBits - indexBits - offsetBits;
+
+    overheadBitsPerBlock = tagBits + 1;
+
+    overheadSizeBytes = (totalBlocks * overheadBitsPerBlock) / 8;
+
+    implementationMemoryBytes = cacheSizeBytes + overheadSizeBytes;
+    implementationMemoryKB = (double)implementationMemoryBytes / 1024.0;
+
+    cacheCost = implementationMemoryKB * 0.07;
 
 }
 
