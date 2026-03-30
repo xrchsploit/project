@@ -4,11 +4,7 @@
 
 // Function prototype
 void displayCacheInput(int cacheSize, int blockSize, int associativity, char* replacementPolicy, int physicalMemory, float percentUsed, int instructions, char* filename[], int fileNumber);
-void printCacheCalculations( int totalBlocks, int tagBits, int indexBits, int totalRows, int overheadSizeBytes, double implementationMemoryKB, int implementationMemoryBytes, double cacheCost );
-void cacheCalculations(int cacheSize, int blocksize, int associativity, int physicalMemory);
-void physicalMemoryCalculations( int physicalMemory, float percentUsed, int fileCount );
-void printMemoryCalculations( int physicalPages, int systemPages, int pteBits, int totalPageTableRam );
-int log2n( int n );
+
 
 // USAGE EXAMPLE: VMCacheSim.exe –s 512 –b 16 –a 4 –r rr –p 1024 –n 100 –u 75 -f Trace1.trc -f Trace2_4Evaluation.trc –f Corruption1.trc
 // Must accept all flags including up to 3 '-f's to read 3 trace files, 20 flags
@@ -19,7 +15,6 @@ int main(int argc, char* argv[]){
     int cacheSize, blockSize, associativity, physicalMemory, instructionsTimeSlice;
     char* replacementPolicy;
     float percentUsed;
-    int fileCount;
     char* files[3];
 
     // Check argument count for minimum amount of arguments
@@ -45,7 +40,6 @@ int main(int argc, char* argv[]){
         case 17:
             files[0] = argv[16];
             displayCacheInput(cacheSize, blockSize, associativity, replacementPolicy, physicalMemory, percentUsed, instructionsTimeSlice, files, 1);
-            fileCount = 1;
             break;
         
         // Two files provided
@@ -53,7 +47,6 @@ int main(int argc, char* argv[]){
             files[0] = argv[16];
             files[1] = argv[18];
             displayCacheInput(cacheSize, blockSize, associativity, replacementPolicy, physicalMemory, percentUsed, instructionsTimeSlice, files, 2);
-            fileCount = 2;
             break;
 
         // Three files provided
@@ -62,16 +55,12 @@ int main(int argc, char* argv[]){
         files[1] = argv[18];
         files[2] = argv[20];
         displayCacheInput(cacheSize, blockSize, associativity, replacementPolicy, physicalMemory, percentUsed, instructionsTimeSlice, files, 3);
-        fileCount = 3;
         break;
 
         default:
             printf("Error: invalid number of arguments or too many files provided\n");
             exit(1);
     }  
-
-    cacheCalculations( cacheSize, blockSize, associativity, physicalMemory );
-    physicalMemoryCalculations( physicalMemory, percentUsed, fileCount );
 
     return 0;
 
@@ -109,83 +98,33 @@ void displayCacheInput(int cacheSize, int blockSize, int associativity, char* re
 
 }
 
-void cacheCalculations(int cacheSize, int blockSize, int associativity, int physicalMemory){
+void cacheCalculations(void){
 
     unsigned int cacheSizeBytes;
 
     cacheSizeBytes = cacheSize * 1024;
 
-    int totalBlocks = cacheSizeBytes / blockSize;
-    int totalRows   = totalBlocks / associativity;
+    totalBlocks = cacheSizeBytes / blockSize;
+    totalRows   = totalBlocks / associativity;
 
-    int offsetBits = log2n(blockSize);
-    int indexBits  = log2n(totalRows);
+    offsetBits = log2_int(blockSize);
+    indexBits  = log2_int(totalRows);
 
-    int physicalAddressBits = log2n(physicalMemory * 1024 * 1024);
+    physicalAddressBits = log2_int(physicalMemory * 1024 * 1024);
 
-    int tagBits = physicalAddressBits - indexBits - offsetBits;
+    tagBits = physicalAddressBits - indexBits - offsetBits;
 
-    int overheadBitsPerBlock = tagBits + 1;
+    overheadBitsPerBlock = tagBits + 1;
 
-    int overheadSizeBytes = (totalBlocks * overheadBitsPerBlock) / 8;
+    overheadSizeBytes = (totalBlocks * overheadBitsPerBlock) / 8;
 
-    int implementationMemoryBytes = cacheSizeBytes + overheadSizeBytes;
-    double implementationMemoryKB = (double)implementationMemoryBytes / 1024.0;
+    implementationMemoryBytes = cacheSizeBytes + overheadSizeBytes;
+    implementationMemoryKB = (double)implementationMemoryBytes / 1024.0;
 
-    double cacheCost = implementationMemoryKB * 0.07;
-
-    printCacheCalculations( totalBlocks, tagBits, indexBits, totalRows, overheadSizeBytes, implementationMemoryKB, implementationMemoryBytes, cacheCost );
+    cacheCost = implementationMemoryKB * 0.07;
 
 }
 
-void physicalMemoryCalculations( int physicalMemory, float percentUsed, int fileCount ) {
-
-    int physicalPages = ( physicalMemory * 1024 * 1024 ) / 4096;
-
-    float percent = percentUsed * 0.01f;
-    int systemPages = percent * physicalPages;
-
-    int pteBits = log2n( physicalPages ) + 1;
-
-    int totalPageTableRam = ( 524288 * fileCount * pteBits ) / 8 ;
-
-
-    printMemoryCalculations( physicalPages, systemPages, pteBits, totalPageTableRam );
-
-
-}
-
-void printMemoryCalculations( int physicalPages, int systemPages, int pteBits, int totalPageTableRam ) {
-
-    printf( "\n***** Physical Memory Calculated Values *****\n\n" );
-    printf( "%-31s %d\n","Number of Physical Pages:", physicalPages );
-    printf( "%-31s %d\n","Number of Pages for System:", systemPages );
-    printf( "%-31s %d bits\n","Size of Page Table Entry:", pteBits );
-    printf( "%-31s %d bytes\n","Total RAM for Page Table(s):", totalPageTableRam );
-
-}
-
-void printCacheCalculations( int totalBlocks, int tagBits, int indexBits, int totalRows, int overheadSizeBytes, double implementationMemoryKB, int implementationMemoryBytes, double cacheCost ){
-
-    // Display argument information in provided format
-    printf( "\n***** Cache Calculated Values *****\n\n" );
-    printf( "%-31s %d\n","Total # Blocks:", totalBlocks );
-    printf( "%-31s %d bits\n","Tag Size:", tagBits );
-    printf( "%-31s %d bits\n","Index Size:", indexBits );
-    printf( "%-31s %d\n","Total # Rows:", totalRows );
-    printf( "%-31s %d bytes\n","Overhead Size:", overheadSizeBytes );
-    printf( "%-31s %.2lf KB (%d bytes)\n","Implementation Memory Size:", implementationMemoryKB, implementationMemoryBytes );
-    printf( "%-31s $%.2lf @ $0.07 per KB\n","Cost:", cacheCost );
-	
+void printCacheCalculations(){
     
-}
-
-int log2n( int n ) {
-
-	int x = 0;
-	while ( n > 1 ) {
-		n /= 2;
-		x++;
-	}
-	return x;
 }
