@@ -2,6 +2,8 @@
 #include <stdlib.h>
 #include <string.h>
 
+// Group #3: Antonio Charfauros, Paul Castillo, Cain Green, Abrianna Garcia
+
 // Function prototype
 void displayCacheInput(int cacheSize, int blockSize, int associativity, char* replacementPolicy, int physicalMemory, float percentUsed, int instructions, char* filename[], int fileNumber);
 void printCacheCalculations( int totalBlocks, int tagBits, int indexBits, int totalRows, int overheadSizeBytes, double implementationMemoryKB, int implementationMemoryBytes, double cacheCost );
@@ -70,6 +72,7 @@ int main(int argc, char* argv[]){
             exit(1);
     }  
 
+    // Call the Cache and Physical Memory functions
     cacheCalculations( cacheSize, blockSize, associativity, physicalMemory );
     physicalMemoryCalculations( physicalMemory, percentUsed, fileCount );
 
@@ -111,45 +114,60 @@ void displayCacheInput(int cacheSize, int blockSize, int associativity, char* re
 
 void cacheCalculations(int cacheSize, int blockSize, int associativity, int physicalMemory){
 
+    // Declare unsigned integer cacheSizeBytes
     unsigned int cacheSizeBytes;
 
+    // Multiply the cache size by 1024
     cacheSizeBytes = cacheSize * 1024;
 
+    // Calculate the total amount of blocks and rows based off block size and associativity
     int totalBlocks = cacheSizeBytes / blockSize;
     int totalRows   = totalBlocks / associativity;
 
+    // Calculate the number of offset and index bits
     int offsetBits = log2n(blockSize);
     int indexBits  = log2n(totalRows);
 
+    // Calculate the number of physical address bits
     int physicalAddressBits = log2n(physicalMemory * 1024 * 1024);
 
+    // Calculate how many bits for the tag
     int tagBits = physicalAddressBits - indexBits - offsetBits;
 
+    // Calculate overhead bits
     int overheadBitsPerBlock = tagBits + 1;
 
+    // Calculate the overhead size in total bytes
     int overheadSizeBytes = (totalBlocks * overheadBitsPerBlock) / 8;
 
+    // Calculate the cost and memory bytes 
     int implementationMemoryBytes = cacheSizeBytes + overheadSizeBytes;
     double implementationMemoryKB = (double)implementationMemoryBytes / 1024.0;
 
+    // Find the cost value
     double cacheCost = implementationMemoryKB * 0.07;
 
+    // Send values to be printed by the print function
     printCacheCalculations( totalBlocks, tagBits, indexBits, totalRows, overheadSizeBytes, implementationMemoryKB, implementationMemoryBytes, cacheCost );
 
 }
 
 void physicalMemoryCalculations( int physicalMemory, float percentUsed, int fileCount ) {
 
+    // Calculate the physical memory pages
     int physicalPages = ( physicalMemory * 1024 * 1024 ) / 4096;
 
+    // Find the percent used
     float percent = percentUsed * 0.01f;
     int systemPages = percent * physicalPages;
 
+    // Find the page table entry bits
     int pteBits = log2n( physicalPages ) + 1;
 
+    // calculate the page table RAM
     int totalPageTableRam = ( 524288 * fileCount * pteBits ) / 8 ;
 
-
+    // Print out the calculations
     printMemoryCalculations( physicalPages, systemPages, pteBits, totalPageTableRam );
 
 
@@ -157,6 +175,7 @@ void physicalMemoryCalculations( int physicalMemory, float percentUsed, int file
 
 void printMemoryCalculations( int physicalPages, int systemPages, int pteBits, int totalPageTableRam ) {
 
+    // Display physical memory values
     printf( "\n***** Physical Memory Calculated Values *****\n\n" );
     printf( "%-31s %d\n","Number of Physical Pages:", physicalPages );
     printf( "%-31s %d\n","Number of Pages for System:", systemPages );
@@ -180,6 +199,7 @@ void printCacheCalculations( int totalBlocks, int tagBits, int indexBits, int to
     
 }
 
+// Log function for some of the calculations
 int log2n( int n ) {
 
 	int x = 0;
