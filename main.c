@@ -158,7 +158,7 @@ void cacheCalculations(int cacheSize, int blockSize, int associativity, int phys
 void physicalMemoryCalculations( int physicalMemory, float percentUsed, int fileCount ) {
 
     // Calculate the physical memory pages
-    int physicalPages = physicalMemory / 256;
+    int physicalPages = physicalMemory * 256;
 
     // Find the percent used
     float percent = percentUsed * 0.01f;
