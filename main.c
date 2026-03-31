@@ -82,7 +82,7 @@ int main(int argc, char* argv[]){
 
 void displayCacheInput(int cacheSize, int blockSize, int associativity, char* replacementPolicy, int physicalMemory, float percentUsed, int instructions, char* filename[], int fileNumber){
 
-    printf("Cache Simulator - CS 3853 - Team #03\n");
+    printf("Cache Simulator - CS 3853 - Team #03\n\n");
     printf("Trace File(s):\n");
 
         // Depending on how many files were provided, show the necessary result
