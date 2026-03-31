@@ -1,12 +1,13 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <math.h>
 
 // Group #3: Antonio Charfauros, Paul Castillo, Cain Green, Abrianna Garcia
 
 // Function prototype
 void displayCacheInput(int cacheSize, int blockSize, int associativity, char* replacementPolicy, int physicalMemory, float percentUsed, int instructions, char* filename[], int fileNumber);
-void printCacheCalculations( int totalBlocks, int tagBits, int indexBits, int totalRows, int overheadSizeBytes, double implementationMemoryKB, int implementationMemoryBytes, double cacheCost );
+void printCacheCalculations( int totalBlocks, int tagBits, int indexBits, int totalRows, unsigned int overheadSizeBytes, double implementationMemoryKB, int implementationMemoryBytes, double cacheCost );
 void cacheCalculations(int cacheSize, int blocksize, int associativity, int physicalMemory);
 void physicalMemoryCalculations( int physicalMemory, float percentUsed, int fileCount );
 void printMemoryCalculations( int physicalPages, int systemPages, int pteBits, int totalPageTableRam );
@@ -82,7 +83,7 @@ int main(int argc, char* argv[]){
 
 void displayCacheInput(int cacheSize, int blockSize, int associativity, char* replacementPolicy, int physicalMemory, float percentUsed, int instructions, char* filename[], int fileNumber){
 
-    printf("Cache Simulator - CS 3853 - Team #03\n\n");
+    printf("Cache Simulator - CS 3853 - Team #03\n");
     printf("Trace File(s):\n");
 
         // Depending on how many files were provided, show the necessary result
@@ -125,20 +126,21 @@ void cacheCalculations(int cacheSize, int blockSize, int associativity, int phys
     int totalRows   = totalBlocks / associativity;
 
     // Calculate the number of offset and index bits
-    int offsetBits = log2n(blockSize);
-    int indexBits  = log2n(totalRows);
+    int offsetBits = (int)log2(blockSize);
+    int indexBits  = (int)log2(totalRows);
 
     // Calculate the number of physical address bits
-    int physicalAddressBits = log2n(physicalMemory * 1024 * 1024);
+    unsigned int physicalAddressBits = physicalMemory * 1024 * 1024;
+    physicalAddressBits = (int)log2(physicalAddressBits);
 
-    // Calculate how many bits for the tag
+    // Calculate how many bits for the tag size
     int tagBits = physicalAddressBits - indexBits - offsetBits;
 
     // Calculate overhead bits
     int overheadBitsPerBlock = tagBits + 1;
 
     // Calculate the overhead size in total bytes
-    int overheadSizeBytes = (totalBlocks * overheadBitsPerBlock) / 8;
+    unsigned int overheadSizeBytes = (totalBlocks * overheadBitsPerBlock) / 8;
 
     // Calculate the cost and memory bytes 
     int implementationMemoryBytes = cacheSizeBytes + overheadSizeBytes;
@@ -162,7 +164,7 @@ void physicalMemoryCalculations( int physicalMemory, float percentUsed, int file
     int systemPages = percent * physicalPages;
 
     // Find the page table entry bits
-    int pteBits = log2n( physicalPages ) + 1;
+    int pteBits = (int)log2( physicalPages ) + 1;
 
     // calculate the page table RAM
     int totalPageTableRam = ( 524288 * fileCount * pteBits ) / 8 ;
@@ -184,7 +186,7 @@ void printMemoryCalculations( int physicalPages, int systemPages, int pteBits, i
 
 }
 
-void printCacheCalculations( int totalBlocks, int tagBits, int indexBits, int totalRows, int overheadSizeBytes, double implementationMemoryKB, int implementationMemoryBytes, double cacheCost ){
+void printCacheCalculations( int totalBlocks, int tagBits, int indexBits, int totalRows, unsigned int overheadSizeBytes, double implementationMemoryKB, int implementationMemoryBytes, double cacheCost ){
 
     // Display argument information in provided format
     printf( "\n***** Cache Calculated Values *****\n\n" );
@@ -192,7 +194,7 @@ void printCacheCalculations( int totalBlocks, int tagBits, int indexBits, int to
     printf( "%-31s %d bits\n","Tag Size:", tagBits );
     printf( "%-31s %d bits\n","Index Size:", indexBits );
     printf( "%-31s %d\n","Total # Rows:", totalRows );
-    printf( "%-31s %d bytes\n","Overhead Size:", overheadSizeBytes );
+    printf( "%-31s %u bytes\n","Overhead Size:", overheadSizeBytes );
     printf( "%-31s %.2lf KB (%d bytes)\n","Implementation Memory Size:", implementationMemoryKB, implementationMemoryBytes );
     printf( "%-31s $%.2lf @ $0.07 per KB\n","Cost:", cacheCost );
 	
