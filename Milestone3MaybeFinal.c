@@ -790,8 +790,16 @@ void printCacheSimulationResults(CacheStats stats, CacheResults result, CacheCal
 
     printf("%-28s %u / %d\n", "Unused Cache Blocks:", result.unusedBlocks, cacheCalc.totalBlocks);
 
+
+
+    // fprintf to automate testing, prints out at out.txt, remove comments if wanted
+/*
+    fprintf( fp, "\n NEW TEST \n" );
+    fprintf( fp, "Trace File: %s\n", input.files[0] );
+    fprintf(fp, "Cache Size: %-5d Block Size: %-5d Replacement Policy: %-5s\n", input.cacheSize, input.blockSize, input.replacementPolicy);
     fprintf(fp, "Total Cache Accesses: %u, Cache Hits: %u, Cache Misses: %u, Compulsory Misses: %u, Conflict Misses: %u, Hit Rate: %.4f, Miss Rate: %.4f, CPI: %.2f, Total Cycles: %llu, Wasted Space: %.2f KB, Percent Unused Space: %.2f%%, Wasted Cost: %.2f\n", stats.totalCacheAccesses, stats.cacheHits, stats.cacheMisses, stats.compulsoryMisses, stats.conflictMisses, result.hitRate, result.missRate, result.cpi, stats.totalCycles, result.unusedKB, percentUnused, result.wastedCost);
     fclose( fp );
+*/
 }
 
 // Log function for some of the calculations
